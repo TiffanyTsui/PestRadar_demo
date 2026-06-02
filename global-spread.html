@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pest Radar — Global Spread Case: Phthorimaea absoluta (GNORAB)</title>
+    <meta
+      name="description"
+      content="Pest Radar demo: a global spatio-temporal case study of Phthorimaea absoluta (Tuta absoluta, EPPO code GNORAB) built on EPPO Reporting Service data, 2004–2026."
+    />
+    <meta property="og:title" content="Pest Radar — Global Spread Case: Phthorimaea absoluta (GNORAB)" />
+    <meta
+      property="og:description"
+      content="Interactive global spread map and EPPO report feed for the tomato leafminer, Phthorimaea absoluta / Tuta absoluta."
+    />
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to dashboard</a>
+    <div class="sidebar-backdrop" data-backdrop hidden></div>
+
+    <!-- ============ SITE NAV ============ -->
+    <header class="site-nav">
+      <a class="site-brand" href="./index.html" aria-label="Pest Radar home">
+        <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-hidden="true">
+          <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M20 20 31 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M20 8a12 12 0 0 1 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.35" />
+          <circle cx="20" cy="20" r="2.8" fill="currentColor" />
+        </svg>
+        <span>Pest&nbsp;Radar</span>
+      </a>
+      <nav class="site-links" aria-label="Primary">
+        <!-- <a href="./index.html" data-i18n="nav.home">Home</a> -->
+        <a href="./global-spread.html" aria-current="page" data-i18n="nav.global">Global spread</a>
+        <a href="./westland.html" data-i18n="nav.westland">Westland forecast</a>
+        <a href="./emerging.html" data-i18n="nav.emerging">Emerging pests</a>
+        <!-- <a href="./about.html" data-i18n="nav.about">About</a> -->
+      </nav>
+      <div class="site-nav-actions" data-lang-host>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch theme"></button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <!-- ============ CONTEXT RAIL (explains the map) ============ -->
+      <aside class="sidebar" id="sidebar" aria-label="How to read this map">
+        <div class="side-block">
+          <div class="taxon-card">
+            <p class="eyebrow" data-i18n="rail.pest">The pest</p>
+            <div class="latin">Phthorimaea absoluta</div>
+            <div class="syn">syn. <em>Tuta absoluta</em></div>
+            <div class="common-names" data-i18n="rail.pest_common">EN: tomato leaf miner · NL: tomatenmineermot · ES: cogollero del tomate / polilla del tomate</div>
+            <figure class="taxon-figure">
+              <img src="./assets/gnorab_14373.jpg" alt="Phthorimaea absoluta (tomato leaf miner) damage and webbing on a tomato fruit" loading="lazy" />
+              <figcaption>
+                <span data-i18n="rail.pest_fig">Larval damage &amp; webbing on a tomato fruit.</span><br />
+                <span class="fig-credit">© Wietse den Hartog, NVWA · EPPO Global Database</span>
+              </figcaption>
+            </figure>
+            <span class="code-chip">EPPO · GNORAB · A2 List</span>
+            <p class="rail-text" data-i18n="rail.pest_desc">A South-American moth that devastates tomato crops. This map replays where and when EPPO first recorded it spreading across Europe, Africa and Asia.</p>
+          </div>
+        </div>
+
+        <div class="side-block rail-explain">
+          <h2 data-i18n="rail.howto">How to read the map</h2>
+          <ul class="rail-list">
+            <li><span class="rl-dot"></span><div data-i18n="rail.howto.dot"><strong>Each dot</strong> is a country's first verified EPPO report, placed in that year.</div></li>
+            <li><span class="rl-size"></span><div data-i18n="rail.howto.size"><strong>Bigger, warmer dots</strong> = larger tomato exporters &mdash; a proxy for how big the problem is likely to be.</div></li>
+            <li><span class="rl-trail"></span><div data-i18n="rail.howto.trail"><strong>Soft trails</strong> trace the most likely introduction path into each new country.</div></li>
+          </ul>
+          <p class="rail-note" data-i18n="rail.howto.note">Press play, or drag the year slider, to watch the invasion unfold. Size, colour and trails are illustrative, not measured.</p>
+        </div>
+
+        <div class="side-block rail-explain">
+          <h2 data-i18n="rail.status">Status legend</h2>
+          <div class="status-list" id="status-list"></div>
+          <p class="rail-note" id="status-total-note"></p>
+        </div>
+
+        <div class="side-block">
+          <h2 data-i18n="rail.sources">Data sources</h2>
+          <div class="source-links">
+            <a class="source-link" href="https://gd.eppo.int/taxon/GNORAB/reporting" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>EPPO Reporting Service<span class="url">gd.eppo.int/taxon/GNORAB/reporting</span></span>
+            </a>
+            <a class="source-link" href="https://gd.eppo.int/taxon/GNORAB/distribution" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>EPPO Distribution<span class="url">gd.eppo.int/taxon/GNORAB/distribution</span></span>
+            </a>
+          </div>
+          <p style="font-size:var(--text-xs);color:var(--color-text-faint);font-family:var(--font-mono)" id="dist-updated"></p>
+        </div>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <main id="main" class="dashboard" tabindex="-1">
+        <header class="topbar">
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;min-width:0">
+            <button class="menu-btn" data-menu type="button" data-i18n-aria="gs.menu" aria-label="Show how to read the map" aria-controls="sidebar" aria-expanded="false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </button>
+            <div style="min-width:0">
+              <p class="eyebrow" data-i18n="gs.eyebrow">Demo · global spread case</p>
+              <h2 data-i18n="gs.h1">Phthorimaea absoluta — worldwide invasion timeline</h2>
+              <p class="sub" data-i18n="gs.sub">A spatio-temporal reconstruction of EPPO-reported detections of the tomato leafminer beyond its native South American range across Europe, Africa and Asia, 2004–2026.</p>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <span class="updated" id="updated-stamp"></span>
+          </div>
+        </header>
+
+        <!-- KPI strip -->
+        <section class="kpi-grid" aria-label="Headline indicators">
+          <article class="kpi">
+            <div class="label" data-i18n="kpi.reports">EPPO report entries</div>
+            <div class="value" id="kpi-reports">—</div>
+            <div class="note" data-i18n="kpi.reports_note">reporting service, 2004–2026</div>
+          </article>
+          <article class="kpi">
+            <div class="label" data-i18n="kpi.countries">Countries present</div>
+            <div class="value" id="kpi-countries">—</div>
+            <div class="note" data-i18n="kpi.countries_note">distribution snapshot</div>
+          </article>
+          <article class="kpi">
+            <div class="label" data-i18n="kpi.continents">EPPO continent groups</div>
+            <div class="value" id="kpi-continents">—</div>
+            <div class="note" data-i18n="kpi.continents_note">with present records</div>
+          </article>
+          <article class="kpi">
+            <div class="label" data-i18n="kpi.mapped">Geolocated reports</div>
+            <div class="value" id="kpi-mapped">—</div>
+            <div class="note" data-i18n="kpi.mapped_note">of 85 reporting entries</div>
+          </article>
+        </section>
+
+        <!-- Map -->
+        <section class="map-section" aria-label="Global spread map">
+          <div class="section-head">
+            <div>
+              <h3 data-i18n="map.h3">Observed spread &amp; simulated build-up</h3>
+              <p class="desc" data-i18n="map.desc">Replay verified EPPO first reports year by year. Each country lights up when it is first reported; dots are sized by tomato-export volume as a proxy for likely problem size, and faint trails trace likely introduction paths.</p>
+            </div>
+          </div>
+
+          <div class="map-card">
+            <div class="map-wrap">
+              <div id="map" role="application" aria-label="Zoomable world map of Phthorimaea absoluta EPPO first reports and simulated local build-up. Scroll or use the controls to zoom; drag to pan."></div>
+              <div class="map-nav" role="group" aria-label="Map navigation">
+                <button class="map-nav-btn" type="button" data-map-reset data-i18n-aria="map.recenter" data-i18n-title="map.recenter" aria-label="Recenter map on Europe and the Mediterranean" title="Recenter (Europe & Mediterranean)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M9.5 20v-5.5h5V20"/></svg>
+                </button>
+                <button class="map-nav-btn" type="button" data-map-world data-i18n-aria="map.world" data-i18n-title="map.world" aria-label="Zoom out to the whole world" title="Zoom out to world">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></svg>
+                </button>
+              </div>
+              <div class="map-year-badge" id="map-year" aria-hidden="true"></div>
+            </div>
+
+            <div class="map-legend-bar" id="legend-diffusion">
+              <span class="lg-title" data-i18n="legend.title">How to read it</span>
+              <span class="lg-row"><span class="diff-swatch"></span><span data-i18n="legend.size">Dot size &amp; colour intensity = tomato-export volume (problem-size proxy)</span></span>
+              <span class="lg-row"><span class="halo-swatch"></span><span data-i18n="legend.halo">Soft fade-out = uncertainty (illustrative, not measured)</span></span>
+              <span class="lg-row"><span class="comet-swatch"></span><span data-i18n="legend.trail">Soft trail = likely introduction path</span></span>
+            </div>
+            <p class="map-footnote" data-i18n="map.footnote">Dots are placed at EPPO-reported countries; size, colour and trails are illustrative, not measured. The map does not show the full native South American pest range.</p>
+
+            <!-- Timeline controls -->
+            <div class="timeline" role="group" aria-label="Timeline playback controls">
+              <button class="play-btn" data-play type="button" data-i18n-aria="ctrl.play" aria-label="Play animation"></button>
+              <div class="slider-wrap">
+                <div class="slider-labels"><span>2008</span><span>2026</span></div>
+                <label for="year-slider" class="sr-only">Select year</label>
+                <input type="range" id="year-slider" min="2008" max="2026" step="1" value="2026"
+                       aria-valuemin="2008" aria-valuemax="2026" />
+                <div style="margin-top:var(--space-2)">
+                  <span class="year-display"><span id="year-value">2026</span><span class="mode-tag" id="mode-tag" data-i18n="ctrl.cumulative">cumulative through year</span></span>
+                </div>
+              </div>
+              <label class="sr-only" for="speed">Animation speed</label>
+              <select class="speed-select" id="speed" data-i18n-aria="ctrl.speed" aria-label="Animation speed">
+                <option value="2400" data-i18n="ctrl.slow">Slow</option>
+                <option value="1600" selected data-i18n="ctrl.normal">Normal</option>
+                <option value="900" data-i18n="ctrl.fast">Fast</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Slim methodology note -->
+          <details class="method-note" id="method-note">
+            <summary data-i18n="method.summary">How this view is built</summary>
+            <div class="method-note-body" id="method-note-body"></div>
+          </details>
+        </section>
+
+        <!-- Distribution snapshot (moved out of the rail so the map stays dominant) -->
+        <section class="dist-section" aria-label="Current EPPO distribution snapshot">
+          <div class="section-head">
+            <div>
+              <h3 data-i18n="dist.h3">Where it is established today</h3>
+              <p class="desc" data-i18n="dist.desc">A snapshot from the EPPO distribution table. Country totals come from the distribution records; the report entries in the feed below are timeline events and need not map one-to-one to countries.</p>
+            </div>
+          </div>
+          <div class="dist-grid">
+            <div class="dist-card">
+              <h4 data-i18n="dist.numbers">By the numbers</h4>
+              <div class="dist-stat-grid" id="dist-stats" aria-live="polite"></div>
+            </div>
+            <div class="dist-card">
+              <h4 data-i18n="dist.byregion">Presence by EPPO region</h4>
+              <div class="continent-bars" id="continent-bars"></div>
+              <p class="rail-note" data-i18n="dist.region_note">EPPO groups present countries into continental regions. Counts are unique countries with a present status.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Narrative -->
+        <section class="narrative" aria-label="Spread narrative">
+          <div class="section-head">
+            <div>
+              <h3 data-i18n="narr.h3">How the invasion unfolded</h3>
+              <p class="desc" data-i18n="narr.desc">Each milestone is drawn from EPPO Reporting Service articles; wording is kept cautious and source-linked.</p>
+            </div>
+          </div>
+          <div class="narrative-grid" id="narrative-grid"></div>
+        </section>
+
+        <!-- Caveats -->
+        <aside class="caveats" aria-label="Data caveats">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            <span data-i18n="caveats.h4">Data caveats</span>
+          </h4>
+          <ul id="caveats-list"></ul>
+        </aside>
+
+        <!-- Event feed -->
+        <section class="feed-section" aria-label="EPPO report feed">
+          <div class="section-head">
+            <div>
+              <h3 data-i18n="feed.h3">EPPO report feed</h3>
+              <p class="desc" data-i18n="feed.desc">All EPPO Reporting Service entries for GNORAB. Country is inferred where the report title or text allows.</p>
+            </div>
+          </div>
+
+          <div class="feed-controls">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <label class="sr-only" for="feed-search">Search reports</label>
+              <input type="search" id="feed-search" data-i18n="feed.search" data-i18n-attr="placeholder" placeholder="Search title, country, report number…" autocomplete="off" />
+            </div>
+            <label class="sr-only" for="feed-filter">Filter by event type</label>
+            <select class="filter-select" id="feed-filter" aria-label="Filter by event type">
+              <option value="" data-i18n="feed.all_types">All event types</option>
+            </select>
+            <span class="feed-count" id="feed-count" aria-live="polite"></span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="evt-table" aria-label="EPPO reports for Phthorimaea absoluta">
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="feed.col_no">Report no.</th>
+                  <th scope="col" data-i18n="feed.col_date">Date</th>
+                  <th scope="col" data-i18n="feed.col_title">Title</th>
+                  <th scope="col" data-i18n="feed.col_country">Country</th>
+                  <th scope="col" data-i18n="feed.col_type">Event type</th>
+                  <th scope="col" data-i18n="feed.col_source">Source</th>
+                </tr>
+              </thead>
+              <tbody id="feed-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <span>Pest Radar demonstration · Spatio-temporal case study built on the <a href="https://gd.eppo.int/taxon/GNORAB/reporting" target="_blank" rel="noopener noreferrer">EPPO Global Database</a>. Not an official EPPO product.</span>
+          <span id="footer-stamp"></span>
+        </footer>
+      </main>
+    </div>
+
+    <div class="map-tip" id="map-tip" role="status" aria-live="polite"></div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script type="module" src="./app.js"></script>
+</body>
+</html>

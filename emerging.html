@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="site.title">Pest Radar — Emerging pests</title>
+    <meta name="description" data-i18n-attr="content" data-i18n="em.lead"
+      content="A watchlist of emerging quarantine pests reported near our growing regions — coarse national-level signals, not yet a regional forecast." />
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-nav">
+      <a class="site-brand" href="./index.html" aria-label="Pest Radar home">
+        <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-hidden="true">
+          <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M20 20 31 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M20 8a12 12 0 0 1 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.35" />
+          <circle cx="20" cy="20" r="2.8" fill="currentColor" />
+        </svg>
+        <span>Pest&nbsp;Radar</span>
+      </a>
+      <nav class="site-links" aria-label="Primary">
+        <!-- <a href="./index.html" data-i18n="nav.home">Home</a> -->
+        <a href="./global-spread.html" data-i18n="nav.global">Global spread</a>
+        <a href="./westland.html" data-i18n="nav.westland">Westland forecast</a>
+        <a href="./emerging.html" aria-current="page" data-i18n="nav.emerging">Emerging pests</a>
+        <!-- <a href="./about.html" data-i18n="nav.about">About</a> -->
+      </nav>
+      <div class="site-nav-actions" data-lang-host>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch theme"></button>
+      </div>
+    </header>
+
+    <main id="main" class="page-wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <p class="eyebrow" data-i18n="em.eyebrow">Watchlist · National-level signals</p>
+        <h1 data-i18n="em.h1">Emerging pests</h1>
+        <p class="lead" data-i18n="em.lead">
+          A watchlist of emerging quarantine pests reported near our growing regions — coarse national-level signals, not yet a regional forecast.
+        </p>
+      </section>
+
+      <!-- DATA-TIER CONTRAST: the critical national vs regional distinction -->
+      <section class="section-block">
+        <div class="tier-contrast">
+          <article class="tier-card tier-national">
+            <span class="tier-tag" data-i18n="em.tier_now">Where we are here</span>
+            <h3 data-i18n="em.national_h">National &amp; coarse</h3>
+            <p data-i18n="em.national_p">EPPO and national plant-protection bodies report a pest the first time it is found in a country or region. That tells us a pest has arrived and roughly where — but it is sparse, lags reality, and is far too coarse to model how it will spread.</p>
+            <ul class="tier-list">
+              <li data-i18n="em.national_1">Country / region first-reports</li>
+              <li data-i18n="em.national_2">Updated occasionally, not live</li>
+              <li data-i18n="em.national_3">No greenhouse-level detail</li>
+            </ul>
+            <p class="tier-verdict" data-i18n="em.national_verdict">→ We can show detections. We cannot honestly forecast spread.</p>
+          </article>
+
+          <div class="tier-arrow" aria-hidden="true">
+            <svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h40M34 4l8 8-8 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <article class="tier-card tier-regional">
+            <span class="tier-tag" data-i18n="em.tier_goal">Where Pest Radar is heading</span>
+            <h3 data-i18n="em.regional_h">Regional &amp; live</h3>
+            <p data-i18n="em.regional_p">The Westland forecast prototype works at the opposite resolution: a cluster of greenhouses, trap counts per week, local weather, and short-range diffusion. That density is what makes an actual forecast — hotspots, risk and uncertainty cones — possible.</p>
+            <ul class="tier-list">
+              <li data-i18n="em.regional_1">Greenhouse-cluster scale</li>
+              <li data-i18n="em.regional_2">Weekly traps + live weather</li>
+              <li data-i18n="em.regional_3">Short-range spread modelling</li>
+            </ul>
+            <p class="tier-verdict"><a href="./westland.html" data-i18n="em.regional_cta">See the Westland forecast →</a></p>
+          </article>
+        </div>
+      </section>
+
+      <!-- THE WATCHLIST: rendered from the PESTS registry in emerging.js -->
+      <section class="section-block">
+        <h2 data-i18n="em.watch_h">On the watchlist</h2>
+        <p class="desc" data-i18n="em.watch_desc">One profile per emerging pest. More can be added as new EPPO alerts arrive.</p>
+
+        <!-- EPPO-style jump index (filled by emerging.js) -->
+        <nav id="pest-index" class="pest-index" aria-label="Pest index"></nav>
+
+        <!-- Pest profile cards + per-pest detection maps (filled by emerging.js) -->
+        <div id="pest-registry"></div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <span data-i18n="footer.disclaimer">Pest Radar demonstration. Built on the EPPO Global Database. Not an official EPPO product.</span>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="./emerging.js"></script>
+  </body>
+</html>

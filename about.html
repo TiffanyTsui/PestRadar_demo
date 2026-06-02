@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="site.title">Pest Radar — About</title>
+    <meta name="description" data-i18n-attr="content" data-i18n="about.lead"
+      content="Pest Radar is an open early-warning system for plant pests, turning public reporting data into clear, spatial views at any scale." />
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-nav">
+      <a class="site-brand" href="./index.html" aria-label="Pest Radar home">
+        <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-hidden="true">
+          <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M20 20 31 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M20 8a12 12 0 0 1 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.35" />
+          <circle cx="20" cy="20" r="2.8" fill="currentColor" />
+        </svg>
+        <span>Pest&nbsp;Radar</span>
+      </a>
+      <nav class="site-links" aria-label="Primary">
+        <!-- <a href="./index.html" data-i18n="nav.home">Home</a> -->
+        <a href="./global-spread.html" data-i18n="nav.global">Global spread</a>
+        <a href="./westland.html" data-i18n="nav.westland">Westland forecast</a>
+        <a href="./emerging.html" data-i18n="nav.emerging">Emerging pests</a>
+        <!-- <a href="./about.html" aria-current="page" data-i18n="nav.about">About</a> -->
+      </nav>
+      <div class="site-nav-actions" data-lang-host>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch theme"></button>
+      </div>
+    </header>
+
+    <main id="main" class="page-wrap">
+      <section class="hero">
+        <p class="eyebrow" data-i18n="about.eyebrow">About</p>
+        <h1 data-i18n="about.h1">About Pest Radar</h1>
+        <p class="lead" data-i18n="about.lead">
+          Pest Radar is an open early-warning system for plant pests, turning public reporting data into clear, spatial views at any scale.
+        </p>
+      </section>
+
+      <section class="section-block">
+        <h2 data-i18n="about.what_h">What it does</h2>
+        <div class="prose">
+          <p data-i18n="about.what_p">Pest Radar reconstructs where and when pests are detected, then layers in cautious, clearly-labelled modelling — likely introduction paths, simulated build-up and risk surfaces — so growers and analysts can see emerging pressure early.</p>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <h2 data-i18n="about.data_h">Data &amp; honesty</h2>
+        <div class="prose">
+          <p data-i18n="about.data_p">Observed detections come from primary sources such as the EPPO Global Database. Anything modelled or simulated is always labelled as illustrative, never presented as measured fact. Trade data is used only under the hood to estimate introduction pathways and problem size — never shown as its own layer.</p>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <h2 data-i18n="about.principles_h">Design principles</h2>
+        <div class="card-grid">
+          <div class="feature-card">
+            <h3 data-i18n="about.p1_t">Map first</h3>
+            <p data-i18n="about.p1_d">The map is the product. Everything else explains or supports it.</p>
+          </div>
+          <div class="feature-card">
+            <h3 data-i18n="about.p2_t">Honest by default</h3>
+            <p data-i18n="about.p2_d">Observed and simulated are visually and textually distinct. Uncertainty is shown, not hidden.</p>
+          </div>
+          <div class="feature-card">
+            <h3 data-i18n="about.p3_t">Slim methodology</h3>
+            <p data-i18n="about.p3_d">Method notes are short, plain-language and source-linked — a site-wide rule.</p>
+          </div>
+          <div class="feature-card">
+            <h3 data-i18n="about.p4_t">One design system</h3>
+            <p data-i18n="about.p4_d">Every page shares the same palette, type and components for a coherent whole.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <span data-i18n="footer.disclaimer">Pest Radar demonstration. Built on the EPPO Global Database. Not an official EPPO product.</span>
+    </footer>
+
+    <script type="module" src="./site.js"></script>
+  </body>
+</html>

@@ -1,687 +1,148 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pest Radar - Regional Early Warning Dashboard</title>
+    <title data-i18n="site.title">Pest Radar</title>
     <meta
       name="description"
-      content="Interactive prototype map for greenhouse pest early warning in Westland, Netherlands, with emerging hotspot analysis, whitefly diffusion scenarios, trap counts, phenology, biocontrol, and KNMI-style weather variables."
+      data-i18n-attr="content"
+      data-i18n="home.lead"
+      content="Pest Radar turns open pest-reporting data into clear, spatial early-warning views — from a single greenhouse region to the whole world."
     />
-    <meta property="og:title" content="Pest Radar - Regional Early Warning Dashboard" />
-    <meta
-      property="og:description"
-      content="Prototype dashboard for greenhouse pest outbreak monitoring and regional risk visualization."
-    />
-    <link rel="preconnect" href="https://api.fontshare.com" />
+    <meta property="og:title" content="Pest Radar" />
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700&display=swap"
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700,800&display=swap"
       rel="stylesheet"
     />
     <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to dashboard</a>
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="System overview">
-        <div class="brand">
-          <svg
-            class="brand-mark"
-            viewBox="0 0 40 40"
-            role="img"
-            aria-label="Pest Radar mark"
-          >
-            <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2.4" />
-            <path d="M20 20 31 13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" />
-            <path d="M20 8a12 12 0 0 1 12 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity="0.35" />
-            <circle cx="20" cy="20" r="3" fill="currentColor" />
-            <circle cx="28" cy="15" r="2.4" fill="currentColor" opacity="0.6" />
-          </svg>
-          <div>
-            <p class="eyebrow">Prototype</p>
-            <h1>Pest Radar</h1>
-          </div>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- ============ SITE NAV ============ -->
+    <header class="site-nav">
+      <a class="site-brand" href="./index.html" aria-label="Pest Radar home">
+        <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-hidden="true">
+          <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M20 20 31 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M20 8a12 12 0 0 1 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.35" />
+          <circle cx="20" cy="20" r="2.8" fill="currentColor" />
+        </svg>
+        <span>Pest&nbsp;Radar</span>
+      </a>
+      <nav class="site-links" aria-label="Primary">
+        <!-- <a href="./index.html" aria-current="page" data-i18n="nav.home">Home</a> -->
+        <a href="./global-spread.html" data-i18n="nav.global">Global spread</a>
+        <a href="./westland.html" data-i18n="nav.westland">Westland forecast</a>
+        <a href="./emerging.html" data-i18n="nav.emerging">Emerging pests</a>
+        <!-- <a href="./about.html" data-i18n="nav.about">About</a> -->
+      </nav>
+      <div class="site-nav-actions" data-lang-host>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch theme"></button>
+      </div>
+    </header>
+
+    <main id="main" class="page-wrap">
+      <!-- ============ HERO ============ -->
+      <section class="hero">
+        <p class="eyebrow" data-i18n="home.eyebrow">Early-warning intelligence for plant health</p>
+        <h1 data-i18n="home.h1">See plant pests before they reach your crop.</h1>
+        <p class="lead" data-i18n="home.lead">
+          Pest Radar turns open pest-reporting data into clear, spatial early-warning views — from a single greenhouse region to the whole world.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="./global-spread.html" data-i18n="home.cta_global">Explore the global spread map</a>
+          <a class="btn btn-ghost" href="./about.html" data-i18n="home.cta_about">About the project</a>
         </div>
+      </section>
 
-        <section class="notice" aria-labelledby="notice-title">
-          <h2 id="notice-title">Sample data only</h2>
-          <p>
-            Scenario reports, trap counts, phenology, biological control releases, and weather variables are
-            synthetic but structured like an operational greenhouse early-warning data model.
-          </p>
-        </section>
-
-        <nav class="layer-nav" aria-label="Map layers">
-          <button class="nav-button is-active" data-layer="incidents" type="button">
-            <span>Greenhouse sensors</span>
-            <strong data-testid="text-sidebar-incidents">48</strong>
-          </button>
-          <button class="nav-button" data-layer="heatmap" type="button">
-            <span>Emerging hotspot</span>
-            <strong>on</strong>
-          </button>
-          <button class="nav-button" data-layer="uncertainty" type="button">
-            <span>Forecast cone</span>
-            <strong>on</strong>
-          </button>
-          <button class="nav-button" data-layer="boundary" type="button">
-            <span>100 km² context</span>
-            <strong>shown</strong>
-          </button>
-        </nav>
-
-        <section class="source-panel" aria-labelledby="source-title">
-          <h2 id="source-title">Prototype assumptions</h2>
-          <ul>
-            <li>Westland greenhouse cluster near Naaldwijk.</li>
-            <li>Whitefly pressure shown over 3–14 days.</li>
-            <li>Diffusion uses weather, wind, and greenhouse connectivity.</li>
-            <li>Hotspot classes show emerging, persistent, and diminishing pressure.</li>
-          </ul>
-          <h3>Context sources</h3>
-          <ul class="source-links">
-            <li><a href="https://www.jpl.nasa.gov/images/pia21986-westland-the-netherlands/" target="_blank" rel="noopener noreferrer">NASA/JPL Westland greenhouse context</a></li>
-            <li><a href="https://www.koppert.com/news-information/news/effective-strategies-to-control-thrips-and-whitefly-in-greenhouses/" target="_blank" rel="noopener noreferrer">Koppert thrips and whitefly greenhouse guidance</a></li>
-            <li><a href="https://pestadvisories.usu.edu/2020/03/26/greenhouse-pests/" target="_blank" rel="noopener noreferrer">USU greenhouse pests reference</a></li>
-            <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7569604/" target="_blank" rel="noopener noreferrer">Greenhouse whitefly phenology model</a></li>
-            <li><a href="https://www.umass.edu/agriculture-food-environment/greenhouse-floriculture/fact-sheets/whiteflies-on-greenhouse-crops" target="_blank" rel="noopener noreferrer">UMass Encarsia guidance</a></li>
-            <li><a href="https://english.knmidata.nl/open-data/actuele10mindataknmistations" target="_blank" rel="noopener noreferrer">KNMI station variable documentation</a></li>
-          </ul>
-        </section>
-      </aside>
-
-      <main id="main" class="dashboard" tabindex="-1">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Regional early warning dashboard</p>
-            <h2>Pest Radar - Regional Early Warning Dashboard</h2>
-          </div>
-          <div class="topbar-actions">
-            <span class="updated" data-testid="text-updated">Scenario model · 05 May 2026 · 17:02 CEST</span>
-            <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to dark mode">
-              <span aria-hidden="true">◐</span>
-            </button>
-          </div>
-        </header>
-
-        <section class="kpi-grid" aria-label="Current filtered indicators">
-          <article class="kpi">
-            <span>At-risk greenhouses</span>
-            <strong id="kpi-incidents" data-testid="text-kpi-incidents">48</strong>
-            <small id="kpi-incidents-note">Whitefly scenario, day 10</small>
-          </article>
-          <article class="kpi">
-            <span>Intensifying cells</span>
-            <strong id="kpi-high-risk" data-testid="text-kpi-high-risk">0</strong>
-            <small>Hotspot class rising</small>
-          </article>
-          <article class="kpi">
-            <span>Mean trap count</span>
-            <strong id="kpi-humidity" data-testid="text-kpi-humidity">0%</strong>
-            <small>Yellow sticky cards / week</small>
-          </article>
-          <article class="kpi">
-            <span>Wind vector</span>
-            <strong id="kpi-pest" data-testid="text-kpi-pest">—</strong>
-            <small id="kpi-wind-note">KNMI-style direction + speed</small>
-          </article>
-        </section>
-
-        <section class="workspace">
-          <section class="control-panel" aria-labelledby="filters-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Scenario</p>
-                <h2 id="filters-title">Scenario controls</h2>
-              </div>
-              <button id="reset-filters" class="ghost-button" type="button" data-testid="button-reset-filters">
-                Reset
-              </button>
+      <!-- ============ GROWER JOURNEY ============ -->
+      <section class="section-block">
+        <h2 data-i18n="home.journey_h">If you grow here, this is how you'd use it</h2>
+        <p class="desc" data-i18n="home.journey_desc">
+          Pest Radar follows the way a grower or grower cooperative actually thinks about pest risk — from what is coming, to what is happening near you, to what history teaches.
+        </p>
+        <ol class="journey">
+          <li class="journey-step">
+            <span class="journey-num">1</span>
+            <div>
+              <h3 data-i18n="home.step1_h">Watch what's coming</h3>
+              <p data-i18n="home.step1_p">Scan the emerging-pest watchlist for new quarantine threats reported in your country or nearby — before they are in your region.</p>
+              <a class="journey-link" href="./emerging.html" data-i18n="home.step1_cta">Emerging pests →</a>
             </div>
-
-            <fieldset class="filter-group">
-              <legend>Pest scenario</legend>
-              <select id="scenario-filter" data-testid="select-scenario-filter" aria-label="Select pest scenario">
-                <option value="whitefly">Whitefly diffusion</option>
-                <option value="thrips">Thrips pressure pulse</option>
-                <option value="aphids">Aphid localized outbreak</option>
-              </select>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Crop segment</legend>
-              <select id="crop-filter" data-testid="select-crop-filter" aria-label="Filter by crop segment">
-                <option value="All">All crops</option>
-                <option value="Tomato">Tomato</option>
-                <option value="Sweet pepper">Sweet pepper</option>
-                <option value="Cucumber">Cucumber</option>
-                <option value="Ornamentals">Ornamentals</option>
-              </select>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Days since first detection</legend>
-              <div class="range-row">
-                <input id="day-filter" type="range" min="3" max="14" value="10" data-testid="input-day-filter" />
-                <output id="day-output" for="day-filter">Day 10</output>
-              </div>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Temperature profile</legend>
-              <select id="temperature-filter" data-testid="select-temperature-filter" aria-label="Select temperature profile">
-                <option value="favorable">Favorable 24 °C mean</option>
-                <option value="cool">Cool 17 °C mean</option>
-                <option value="hot">Heat-stress 31 °C mean</option>
-              </select>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Wind direction and speed</legend>
-              <select id="wind-filter" data-testid="select-wind-filter" aria-label="Select wind direction">
-                <option value="SW">SW → NE forecast pattern</option>
-                <option value="W">W → E forecast pattern</option>
-                <option value="NW">NW → SE forecast pattern</option>
-                <option value="S">S → N forecast pattern</option>
-              </select>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Intervention scenario</legend>
-              <select id="intervention-filter" data-testid="select-intervention-filter" aria-label="Select intervention scenario">
-                <option value="baseline">Observed biocontrol schedule</option>
-                <option value="early-release">Early Encarsia release</option>
-                <option value="delayed-release">Delayed release / scouting lag</option>
-              </select>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Forecast horizon</legend>
-              <div class="range-row">
-                <input id="week-filter" type="range" min="3" max="14" value="14" data-testid="input-week-filter" />
-                <output id="week-output" for="week-filter">14 days</output>
-              </div>
-              <div class="quick-periods" role="group" aria-label="Quick period filters">
-                <button type="button" data-day="3" data-testid="button-period-spring">3 days</button>
-                <button type="button" data-day="7" data-testid="button-period-summer">1 week</button>
-                <button type="button" data-day="14" data-testid="button-period-full">2 weeks</button>
-              </div>
-              <button id="playback-toggle" class="playback-button" type="button" data-testid="button-playback">
-                Play day 3 → 14
-              </button>
-            </fieldset>
-
-            <fieldset class="filter-group toggles">
-              <legend>Map overlays</legend>
-              <label><input id="toggle-heat" type="checkbox" checked data-testid="input-toggle-heat" /> Kernel density</label>
-              <label><input id="toggle-hotspot" type="checkbox" checked data-testid="input-toggle-hotspot" /> Hotspot grid</label>
-              <label><input id="toggle-uncertainty" type="checkbox" checked data-testid="input-toggle-uncertainty" /> Forecast cone</label>
-              <label><input id="toggle-boundary" type="checkbox" checked data-testid="input-toggle-boundary" /> 100 km² area</label>
-            </fieldset>
-
-            <section class="report-action" aria-labelledby="report-action-title">
-              <div>
-                <p class="eyebrow">Situation report</p>
-                <h3 id="report-action-title">One-click PDF export</h3>
-                <p>Generate a printable 2-page report from the current day, intervention, wind, and temperature settings.</p>
-              </div>
-              <button id="generate-report" class="report-button" type="button" data-testid="button-generate-report">
-                Generate situation report
-              </button>
-              <p id="report-status" class="report-status" data-testid="text-report-status" aria-live="polite"></p>
-            </section>
-            <section class="scenario-note" aria-labelledby="scenario-note-title">
-              <h3 id="scenario-note-title">Scenario logic</h3>
-              <p id="scenario-note-text">
-                Whitefly pressure begins in the Naaldwijk glasshouse cluster, then diffuses downwind while trap counts rise fastest under warm, humid conditions.
-              </p>
-            </section>
-          </section>
-
-          <section class="map-card" aria-labelledby="map-title">
-            <div class="map-header">
-              <div>
-                <p class="eyebrow">Hotspot map</p>
-                <h2 id="map-title">Spatio-temporal diffusion surface</h2>
-              </div>
-              <div class="legend" aria-label="Emerging hotspot classification legend">
-                <span><i class="swatch new-hot"></i>New hot spot</span>
-                <span><i class="swatch intensifying-hot"></i>Intensifying</span>
-                <span><i class="swatch persistent-hot"></i>Persistent</span>
-                <span><i class="swatch diminishing-hot"></i>Diminishing</span>
-                <span><i class="swatch historical-hot"></i>Historical</span>
-                <span><i class="swatch cone-optimistic"></i>Optimistic cone</span>
-                <span><i class="swatch cone-expected"></i>Expected</span>
-                <span><i class="swatch cone-worst"></i>Worst-case</span>
-              </div>
+          </li>
+          <li class="journey-step">
+            <span class="journey-num">2</span>
+            <div>
+              <h3 data-i18n="home.step2_h">Forecast near you</h3>
+              <p data-i18n="home.step2_p">When a pest is in your area, the Westland regional forecast turns trap counts and local weather into hotspots, risk and short-range spread for your greenhouse cluster.</p>
+              <a class="journey-link" href="./westland.html" data-i18n="home.step2_cta">Westland forecast →</a>
             </div>
-            <div id="map" class="map" data-testid="map-westland" role="application" aria-label="Interactive Westland pest outbreak map"></div>
-            <div class="map-caption">
-              <span id="wind-caption" data-testid="text-wind-caption">Wind SW → NE · 4.8 m/s</span>
-              <span id="model-caption">Kernel density + hotspot grid + uncertainty cone</span>
+          </li>
+          <li class="journey-step">
+            <span class="journey-num">3</span>
+            <div>
+              <h3 data-i18n="home.step3_h">Learn from history</h3>
+              <p data-i18n="home.step3_p">See how a pest has invaded worldwide over the years, so you understand the trajectory behind the threat on your doorstep.</p>
+              <a class="journey-link" href="./global-spread.html" data-i18n="home.step3_cta">Global spread case →</a>
             </div>
-          </section>
+          </li>
+        </ol>
+      </section>
 
-          <section class="weather-card" aria-labelledby="weather-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Fictional forecast</p>
-                <h2 id="weather-title">Weather window alongside pest diffusion</h2>
-              </div>
-              <span id="weather-summary" data-testid="text-weather-summary">Day 10 · favorable whitefly window</span>
-            </div>
-            <div class="weather-layout">
-              <div id="weather-selected" class="weather-selected" data-testid="weather-selected"></div>
-              <div id="weather-forecast" class="weather-forecast" data-testid="weather-forecast"></div>
-            </div>
-          </section>
+      <!-- ============ EXPLORE / FEATURE CARDS ============ -->
+      <section class="section-block">
+        <h2 data-i18n="home.explore">The three views</h2>
+        <p class="desc" data-i18n="home.explore_desc">
+          Each works at a different resolution — from worldwide history, down to the next greenhouse at risk.
+        </p>
+        <div class="card-grid">
+          <!-- Emerging pests (watchlist) -->
+          <a class="feature-card" href="./emerging.html">
+            <svg class="fc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M12 3l9 16H3z" stroke-linejoin="round" />
+              <path d="M12 10v4M12 17h.01" stroke-linecap="round" />
+            </svg>
+            <span class="fc-tag" data-i18n="common.watchlist">Watchlist</span>
+            <h3 data-i18n="card.emerging.title">Emerging pests</h3>
+            <p data-i18n="card.emerging.desc">National-level alerts for new quarantine threats like Chilli thrips — what we know, and why it is not yet a forecast.</p>
+          </a>
 
-          <section class="insight-card" aria-labelledby="trend-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Temporal signal</p>
-                <h2 id="trend-title">Forecast trap count and hotspot area</h2>
-              </div>
-              <span id="active-summary" data-testid="text-active-summary">42 active records</span>
-            </div>
-            <canvas id="timeline-chart" height="180" aria-label="Forecast trap count and hotspot area chart"></canvas>
-          </section>
+          <!-- Westland forecast (prototype) -->
+          <a class="feature-card" href="./westland.html">
+            <svg class="fc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M3 20h18M5 20V9l5-4 5 4v11M9 20v-5h2v5" />
+            </svg>
+            <span class="badge-soon" data-i18n="common.prototype">Prototype</span>
+            <h3 data-i18n="card.westland.title">Westland forecast</h3>
+            <p data-i18n="card.westland.desc">The future product: a regional, greenhouse-cluster forecast with hotspots, risk surfaces and uncertainty cones.</p>
+          </a>
 
-          <section class="comparison-card" aria-labelledby="comparison-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Decision story</p>
-                <h2 id="comparison-title">Intervention strategy comparison</h2>
-              </div>
-              <span id="comparison-summary" data-testid="text-comparison-summary">Early release contains the smallest hotspot area</span>
-            </div>
-            <div id="comparison-grid" class="comparison-grid" data-testid="comparison-grid"></div>
-            <p id="literature-note" class="literature-note">
-              Assumption check: the favorable scenario uses 24 °C and 78% RH because published greenhouse whitefly phenology places maximum population growth near 24 °C, while Encarsia formosa is commonly described as most effective around 21–26 °C and 50–80% RH.
-            </p>
-          </section>
+          <!-- Global spread (live) -->
+          <a class="feature-card" href="./global-spread.html">
+            <svg class="fc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18" />
+            </svg>
+            <span class="fc-tag" data-i18n="common.live_demo">Live demo</span>
+            <h3 data-i18n="card.global.title">Global spread case</h3>
+            <p data-i18n="card.global.desc">Replay the worldwide invasion of the tomato leafminer (Tuta absoluta) year by year, built on verified EPPO reports.</p>
+          </a>
+        </div>
+      </section>
+    </main>
 
-          <section class="detail-card" aria-labelledby="table-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Incident feed</p>
-                <h2 id="table-title">Latest filtered greenhouse reports</h2>
-              </div>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Greenhouse ID</th>
-                    <th>Crop stage</th>
-                    <th>Trap count</th>
-                    <th>Biocontrol</th>
-                    <th>Risk</th>
-                    <th>KNMI-style weather</th>
-                  </tr>
-                </thead>
-                <tbody id="incident-table" data-testid="table-incidents"></tbody>
-              </table>
-            </div>
-          </section>
+    <footer class="page-footer">
+      <span data-i18n="footer.disclaimer">Pest Radar demonstration. Built on the EPPO Global Database. Not an official EPPO product.</span>
+    </footer>
 
-          <footer class="prototype-footer">
-            <p>
-              Prototype map uses OpenStreetMap tiles. Regional greenhouse scale and pest category assumptions are informed by
-              <a href="https://www.jpl.nasa.gov/images/pia21986-westland-the-netherlands/" target="_blank" rel="noopener noreferrer">NASA/JPL</a>,
-              <a href="https://www.koppert.com/news-information/news/effective-strategies-to-control-thrips-and-whitefly-in-greenhouses/" target="_blank" rel="noopener noreferrer">Koppert</a>,
-              <a href="https://pestadvisories.usu.edu/2020/03/26/greenhouse-pests/" target="_blank" rel="noopener noreferrer">Utah State University Extension</a>,
-              <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7569604/" target="_blank" rel="noopener noreferrer">greenhouse whitefly phenology research</a>,
-              <a href="https://www.umass.edu/agriculture-food-environment/greenhouse-floriculture/fact-sheets/whiteflies-on-greenhouse-crops" target="_blank" rel="noopener noreferrer">UMass Encarsia guidance</a>,
-              and
-              <a href="https://english.knmidata.nl/open-data/actuele10mindataknmistations" target="_blank" rel="noopener noreferrer">KNMI station documentation</a>.
-              Scenario records are synthetic sample data for demonstration; they should be treated as an interface prototype, not operational pest advice.
-            </p>
-          </footer>
-        </section>
-      </main>
-    </div>
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-    <script src="./app.js"></script>
-  <script data-pplx-inline-edit>
-(function () {
-  if (window === window.top) return;
-
-  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
-  const MAX_FONT_BYTES = 500 * 1024;
-  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
-  let scrollForwarding = false;
-  let scrollRaf = 0;
-  let trustedTopOrigin = null;
-
-  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
-  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
-  // across multiple labels.
-  function matchesAllowedOrigin(origin) {
-    if (!origin) return false;
-    for (const entry of allowedParentOrigins) {
-      if (!entry.includes("*")) {
-        if (entry === origin) return true;
-        continue;
-      }
-      const pattern = new RegExp(
-        "^" +
-          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
-          "$",
-      );
-      if (pattern.test(origin)) return true;
-    }
-    return false;
-  }
-
-  // Trust decision: when the sender is same-origin-visible (event.origin is a
-  // real origin like https://www.perplexity.ai) we trust event.origin directly.
-  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
-  // broker's stamped `parentOrigin` to identify the top window. The fallback
-  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
-  // on the response path (see postToTrustedTop) to ensure replies can't be
-  // delivered to anyone but the actual top window of that claimed origin.
-  function getTrustedParentOrigin(event) {
-    const forwardedParentOrigin =
-      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
-    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
-    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
-  }
-
-  // All responses go to window.top with targetOrigin = the allowlisted origin.
-  // An attacker that iframes us inside their own null-origin broker can claim
-  // any parentOrigin they like, but the browser will drop the reply whenever
-  // the real top's origin doesn't match — so the screenshot never leaves.
-  function postToTrustedTop(message) {
-    if (!trustedTopOrigin) return;
-    try {
-      window.top.postMessage(message, trustedTopOrigin);
-    } catch (_error) {}
-  }
-
-  function inlineAll(original, clone) {
-    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
-
-    try {
-      const computedStyle = getComputedStyle(original);
-      // cssText on a computed style is the serialized declaration in modern
-      // Chromium/Safari — a single read beats enumerating ~400 longhand
-      // properties. Firefox returns "" here, so we fall back on empty.
-      const serialized = computedStyle.cssText;
-      if (serialized) {
-        clone.style.cssText = serialized;
-      } else {
-        const parts = new Array(computedStyle.length);
-        for (let index = 0; index < computedStyle.length; index += 1) {
-          const property = computedStyle[index];
-          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
-        }
-        clone.style.cssText = parts.join("");
-      }
-    } catch (_error) {}
-
-    const originalChildren = original.children;
-    const clonedChildren = clone.children;
-    for (
-      let index = 0;
-      index < originalChildren.length && index < clonedChildren.length;
-      index += 1
-    ) {
-      inlineAll(originalChildren[index], clonedChildren[index]);
-    }
-  }
-
-  function extractFontUrl(srcValue) {
-    const matches = [
-      ...srcValue.matchAll(
-        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
-      ),
-    ];
-    if (matches.length === 0) return null;
-    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
-    if (woff2) return woff2[1];
-    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
-    if (woff) return woff[1];
-    return matches[0][1];
-  }
-
-  // Cache resolved font URL -> data URI across captures. Fonts on a page
-  // essentially never change, and a batch run emits multiple captures back to
-  // back — without this we'd refetch + re-base64 every time.
-  const fontDataUriCache = new Map();
-  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
-
-  async function fetchAsDataUri(url) {
-    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
-    let dataUri = null;
-    try {
-      const response = await fetch(url, { mode: "cors", credentials: "omit" });
-      if (response.ok) {
-        const blob = await response.blob();
-        if (blob.size <= MAX_FONT_BYTES) {
-          dataUri = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-              resolve(typeof reader.result === "string" ? reader.result : null);
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(blob);
-          });
-        }
-      }
-    } catch (_error) {
-      dataUri = null;
-    }
-    fontDataUriCache.set(url, dataUri);
-    return dataUri;
-  }
-
-  function collectFontFaceRuleTexts() {
-    const rules = [];
-    for (const sheet of document.styleSheets) {
-      let cssRules;
-      try {
-        cssRules = sheet.cssRules;
-      } catch (_error) {
-        continue;
-      }
-      if (!cssRules) continue;
-      for (const rule of cssRules) {
-        const cssText = rule.cssText || "";
-        if (cssText.startsWith("@font-face")) rules.push(cssText);
-      }
-    }
-    return rules;
-  }
-
-  async function buildInlinedFontCss() {
-    const ruleTexts = collectFontFaceRuleTexts();
-    if (ruleTexts.length === 0) return null;
-
-    const resolved = ruleTexts.map((cssText) => {
-      if (!SRC_DECLARATION_RE.test(cssText)) return null;
-      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
-      if (!srcMatch) return null;
-      const url = extractFontUrl(srcMatch[1]);
-      if (!url) return null;
-      try {
-        return { cssText, url: new URL(url, document.baseURI).href };
-      } catch (_error) {
-        return null;
-      }
-    });
-
-    const dataUris = await Promise.all(
-      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
-    );
-
-    const inlined = [];
-    let totalBytes = 0;
-    for (let index = 0; index < resolved.length; index += 1) {
-      const entry = resolved[index];
-      const dataUri = dataUris[index];
-      if (!entry || !dataUri) continue;
-      const approxBytes = dataUri.length * 0.75;
-      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
-      totalBytes += approxBytes;
-      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
-    }
-    return inlined.length > 0 ? inlined.join("\n") : null;
-  }
-
-  function stripExternal(clone) {
-    const images = clone.querySelectorAll("img");
-    for (let index = 0; index < images.length; index += 1) {
-      const src = images[index].getAttribute("src");
-      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
-    }
-
-    const elements = clone.querySelectorAll("*");
-    for (let index = 0; index < elements.length; index += 1) {
-      const style = elements[index].style.cssText;
-      if (style && style.includes("url(")) {
-        elements[index].style.cssText = style.replace(
-          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
-          "none",
-        );
-      }
-    }
-  }
-
-  function emitScroll() {
-    scrollRaf = 0;
-    if (!scrollForwarding) return;
-    postToTrustedTop({
-      type: "INLINE_EDIT_SCROLL",
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-    });
-  }
-
-  window.addEventListener(
-    "scroll",
-    function () {
-      if (!scrollForwarding || scrollRaf) return;
-      scrollRaf = requestAnimationFrame(emitScroll);
-    },
-    { passive: true, capture: true },
-  );
-
-  async function handleCaptureRequest(event) {
-    const requestId = event.data.requestId;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    function postResult(dataUrl) {
-      postToTrustedTop({
-        type: "INLINE_EDIT_SCREENSHOT_RESULT",
-        requestId,
-        dataUrl,
-        scrollX,
-        scrollY,
-      });
-    }
-
-    try {
-      // Wait for any pending web fonts to resolve so both inline metrics and
-      // the @font-face inlining below see the same loaded faces.
-      if (document.fonts && document.fonts.ready) {
-        try {
-          await document.fonts.ready;
-        } catch (_error) {}
-      }
-
-      const clone = document.documentElement.cloneNode(true);
-      inlineAll(document.documentElement, clone);
-
-      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
-      for (let index = 0; index < removedNodes.length; index += 1) {
-        removedNodes[index].remove();
-      }
-
-      stripExternal(clone);
-
-      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
-      // can resolve them — external font URLs aren't fetched during
-      // foreignObject rendering, which would otherwise force a fallback face
-      // and change text metrics.
-      const inlinedFontCss = await buildInlinedFontCss();
-      if (inlinedFontCss) {
-        const styleEl = document.createElement("style");
-        styleEl.textContent = inlinedFontCss;
-        const head = clone.querySelector("head");
-        if (head) head.appendChild(styleEl);
-        else clone.insertBefore(styleEl, clone.firstChild);
-      }
-
-      const html = new XMLSerializer().serializeToString(clone);
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-        '<foreignObject width="100%" height="100%">' +
-        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
-        `<div style="transform:translate(-${scrollX}px,-${scrollY}px);transform-origin:top left">` +
-        html +
-        "</div></div></foreignObject></svg>";
-      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-      const image = new Image();
-      image.onload = function () {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(image, 0, 0);
-        postResult(canvas.toDataURL("image/png"));
-      };
-      image.onerror = function () {
-        postResult(null);
-      };
-      image.src = svgUrl;
-    } catch (_error) {
-      postResult(null);
-    }
-  }
-
-  window.addEventListener("message", function (event) {
-    if (!event.data) return;
-    // Only accept messages from the direct parent frame. Blocks sibling /
-    // unrelated-window postMessage senders that could otherwise reach us.
-    if (event.source !== window.parent) return;
-
-    const trustedParentOrigin = getTrustedParentOrigin(event);
-    if (!trustedParentOrigin) return;
-    trustedTopOrigin = trustedParentOrigin;
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
-      scrollForwarding = true;
-      emitScroll();
-      return;
-    }
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
-      scrollForwarding = false;
-      if (scrollRaf) cancelAnimationFrame(scrollRaf);
-      scrollRaf = 0;
-      return;
-    }
-
-    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
-
-    handleCaptureRequest(event);
-  });
-})();
-
-
-</script></body>
+    <script type="module" src="./site.js"></script>
+  </body>
 </html>

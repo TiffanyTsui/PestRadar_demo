@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="wlf.title">Pest Radar — Westland forecast</title>
+    <meta
+      name="description"
+      data-i18n-attr="content"
+      data-i18n="wlf.lead"
+      content="A regional early-warning forecast for the Dutch Westland greenhouse cluster — synthetic whitefly, thrips and aphid diffusion scenarios with hotspots, uncertainty cones and a weather window."
+    />
+    <meta property="og:title" content="Pest Radar — Westland forecast" />
+    <meta
+      property="og:description"
+      content="Prototype regional forecast for greenhouse pest outbreak monitoring and short-range spread in Westland, Netherlands."
+    />
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="common.skip">Skip to dashboard</a>
+    <div class="sidebar-backdrop" data-backdrop hidden></div>
+
+    <!-- ============ SITE NAV ============ -->
+    <header class="site-nav">
+      <a class="site-brand" href="./index.html" aria-label="Pest Radar home">
+        <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-hidden="true">
+          <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M20 20 31 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M20 8a12 12 0 0 1 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.35" />
+          <circle cx="20" cy="20" r="2.8" fill="currentColor" />
+        </svg>
+        <span>Pest&nbsp;Radar</span>
+      </a>
+      <nav class="site-links" aria-label="Primary">
+        <!-- <a href="./index.html" data-i18n="nav.home">Home</a> -->
+        <a href="./global-spread.html" data-i18n="nav.global">Global spread</a>
+        <a href="./westland.html" aria-current="page" data-i18n="nav.westland">Westland forecast</a>
+        <a href="./emerging.html" data-i18n="nav.emerging">Emerging pests</a>
+        <a href="./about.html" data-i18n="nav.about">About</a>
+      </nav>
+      <div class="site-nav-actions" data-lang-host>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch theme"></button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <!-- ============ CONTEXT RAIL (explains the map) ============ -->
+      <aside class="sidebar" id="sidebar" aria-label="How to read this forecast">
+        <div class="side-block">
+          <section class="notice" aria-labelledby="notice-title">
+            <h2 id="notice-title" data-i18n="wlf.notice_h">Synthetic data only</h2>
+            <p data-i18n="wlf.notice_p">
+              Scenario reports, trap counts, phenology, biocontrol releases and weather variables on this page are synthetic, but structured like an operational greenhouse early-warning data model.
+            </p>
+          </section>
+        </div>
+
+        <div class="side-block rail-explain">
+          <h2 data-i18n="wlf.rail_howto">How to read this map</h2>
+          <ul class="rail-list">
+            <li><span class="rl-dot"></span><div data-i18n="wlf.rail_sensors"><strong>Greenhouse markers</strong> show modelled risk for each glasshouse under the chosen scenario and day.</div></li>
+            <li><span class="rl-size"></span><div data-i18n="wlf.rail_hotspot"><strong>The hotspot grid &amp; kernel density</strong> mark where pressure is emerging, intensifying or persistent.</div></li>
+            <li><span class="rl-trail"></span><div data-i18n="wlf.rail_cone"><strong>The forecast cone</strong> traces optimistic, expected and worst-case downwind spread.</div></li>
+          </ul>
+          <p class="rail-note" data-i18n="wlf.rail_note">Whitefly pressure starts in the Naaldwijk glasshouse cluster, then diffuses downwind. All sizes, colours and trails are illustrative, not measured.</p>
+        </div>
+
+        <div class="side-block rail-explain">
+          <h2 data-i18n="wlf.assume_h">Prototype assumptions</h2>
+          <ul class="rail-list rail-list-plain">
+            <li data-i18n="wlf.assume_1">Westland greenhouse cluster near Naaldwijk.</li>
+            <li data-i18n="wlf.assume_2">Whitefly pressure shown over 3–14 days.</li>
+            <li data-i18n="wlf.assume_3">Diffusion uses weather, wind and greenhouse connectivity.</li>
+            <li data-i18n="wlf.assume_4">Hotspot classes show emerging, persistent and diminishing pressure.</li>
+          </ul>
+        </div>
+
+        <div class="side-block">
+          <h2 data-i18n="wlf.sources_h">Context sources</h2>
+          <div class="source-links">
+            <a class="source-link" href="https://www.jpl.nasa.gov/images/pia21986-westland-the-netherlands/" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>NASA/JPL Westland context<span class="url">jpl.nasa.gov</span></span>
+            </a>
+            <a class="source-link" href="https://www.koppert.com/news-information/news/effective-strategies-to-control-thrips-and-whitefly-in-greenhouses/" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>Koppert thrips &amp; whitefly guidance<span class="url">koppert.com</span></span>
+            </a>
+            <a class="source-link" href="https://pestadvisories.usu.edu/2020/03/26/greenhouse-pests/" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>USU greenhouse pests<span class="url">pestadvisories.usu.edu</span></span>
+            </a>
+            <a class="source-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7569604/" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>Greenhouse whitefly phenology<span class="url">ncbi.nlm.nih.gov</span></span>
+            </a>
+            <a class="source-link" href="https://www.umass.edu/agriculture-food-environment/greenhouse-floriculture/fact-sheets/whiteflies-on-greenhouse-crops" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>UMass Encarsia guidance<span class="url">umass.edu</span></span>
+            </a>
+            <a class="source-link" href="https://english.knmidata.nl/open-data/actuele10mindataknmistations" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>
+              <span>KNMI station variables<span class="url">knmidata.nl</span></span>
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <main id="main" class="dashboard" tabindex="-1">
+        <header class="topbar">
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;min-width:0">
+            <button class="menu-btn" data-menu type="button" data-i18n-aria="wlf.menu" aria-label="Show how to read the map" aria-controls="sidebar" aria-expanded="false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </button>
+            <div style="min-width:0">
+              <p class="eyebrow" data-i18n="wlf.eyebrow">Prototype · Regional forecast</p>
+              <h1 data-i18n="wlf.h1">Westland forecast</h1>
+              <p class="sub" data-i18n="wlf.lead">A regional early-warning forecast for the Dutch Westland greenhouse cluster — synthetic whitefly, thrips and aphid diffusion scenarios with hotspots, uncertainty cones and a weather window.</p>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <span class="updated" data-i18n="wlf.updated">Scenario model · synthetic data</span>
+          </div>
+        </header>
+
+        <!-- ============ KPI STRIP ============ -->
+        <section class="kpi-grid" aria-label="Current filtered indicators">
+          <article class="kpi">
+            <span class="label" data-i18n="wlf.kpi_incidents">At-risk greenhouses</span>
+            <strong class="value" id="kpi-incidents" data-testid="text-kpi-incidents">48</strong>
+            <small class="note" id="kpi-incidents-note">Whitefly scenario, day 10</small>
+          </article>
+          <article class="kpi">
+            <span class="label" data-i18n="wlf.kpi_intensifying">Intensifying cells</span>
+            <strong class="value" id="kpi-high-risk" data-testid="text-kpi-high-risk">0</strong>
+            <small class="note" data-i18n="wlf.kpi_intensifying_note">Hotspot class rising</small>
+          </article>
+          <article class="kpi">
+            <span class="label" data-i18n="wlf.kpi_traps">Mean trap count</span>
+            <strong class="value" id="kpi-humidity" data-testid="text-kpi-humidity">0</strong>
+            <small class="note" data-i18n="wlf.kpi_traps_note">Yellow sticky cards / week</small>
+          </article>
+          <article class="kpi">
+            <span class="label" data-i18n="wlf.kpi_wind">Wind vector</span>
+            <strong class="value" id="kpi-pest" data-testid="text-kpi-pest">—</strong>
+            <small class="note" id="kpi-wind-note">KNMI-style direction + speed</small>
+          </article>
+        </section>
+
+        <!-- ============ WORKSPACE ============ -->
+        <section class="workspace">
+          <!-- MAP (dominant) -->
+          <section class="map-card" aria-labelledby="map-title">
+            <div class="map-header">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.map_eyebrow">Hotspot map</p>
+                <h2 id="map-title" data-i18n="wlf.map_title">Spatio-temporal diffusion surface</h2>
+              </div>
+              <div class="legend" aria-label="Emerging hotspot classification legend">
+                <span><i class="swatch new-hot"></i><span data-i18n="wlf.legend_new">New hot spot</span></span>
+                <span><i class="swatch intensifying-hot"></i><span data-i18n="wlf.legend_intensifying">Intensifying</span></span>
+                <span><i class="swatch persistent-hot"></i><span data-i18n="wlf.legend_persistent">Persistent</span></span>
+                <span><i class="swatch diminishing-hot"></i><span data-i18n="wlf.legend_diminishing">Diminishing</span></span>
+                <span><i class="swatch historical-hot"></i><span data-i18n="wlf.legend_historical">Historical</span></span>
+                <span><i class="swatch cone-optimistic"></i><span data-i18n="wlf.cone_optimistic">Optimistic cone</span></span>
+                <span><i class="swatch cone-expected"></i><span data-i18n="wlf.cone_expected">Expected</span></span>
+                <span><i class="swatch cone-worst"></i><span data-i18n="wlf.cone_worst">Worst-case</span></span>
+              </div>
+            </div>
+            <div id="map" class="map" data-testid="map-westland" role="application" aria-label="Interactive Westland pest outbreak map"></div>
+            <div class="map-caption">
+              <span id="wind-caption" data-testid="text-wind-caption">Wind SW → NE · 4.8 m/s</span>
+              <span id="model-caption" data-i18n="wlf.model_caption">Kernel density + hotspot grid + uncertainty cone</span>
+            </div>
+          </section>
+
+          <!-- CONTROL PANEL -->
+          <section class="control-panel" aria-labelledby="filters-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.ctrl_eyebrow">Scenario</p>
+                <h2 id="filters-title" data-i18n="wlf.ctrl_heading">Scenario controls</h2>
+              </div>
+              <button id="reset-filters" class="ghost-button" type="button" data-testid="button-reset-filters" data-i18n="wlf.reset">
+                Reset
+              </button>
+            </div>
+
+            <div class="control-grid">
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_scenario">Pest scenario</legend>
+                <select id="scenario-filter" data-testid="select-scenario-filter" data-i18n-aria="wlf.ctrl_scenario" aria-label="Select pest scenario">
+                  <option value="whitefly" data-i18n="wlf.opt_whitefly">Whitefly diffusion</option>
+                  <option value="thrips" data-i18n="wlf.opt_thrips">Thrips pressure pulse</option>
+                  <option value="aphids" data-i18n="wlf.opt_aphids">Aphid localized outbreak</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_crop">Crop segment</legend>
+                <select id="crop-filter" data-testid="select-crop-filter" data-i18n-aria="wlf.ctrl_crop" aria-label="Filter by crop segment">
+                  <option value="All" data-i18n="wlf.crop_all">All crops</option>
+                  <option value="Tomato" data-i18n="wlf.crop_tomato">Tomato</option>
+                  <option value="Sweet pepper" data-i18n="wlf.crop_pepper">Sweet pepper</option>
+                  <option value="Cucumber" data-i18n="wlf.crop_cucumber">Cucumber</option>
+                  <option value="Ornamentals" data-i18n="wlf.crop_ornamentals">Ornamentals</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_days">Days since first detection</legend>
+                <div class="range-row">
+                  <input id="day-filter" type="range" min="3" max="14" value="10" data-testid="input-day-filter" data-i18n-aria="wlf.ctrl_days" aria-label="Days since first detection" />
+                  <output id="day-output" for="day-filter">Day 10</output>
+                </div>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_temp">Temperature profile</legend>
+                <select id="temperature-filter" data-testid="select-temperature-filter" data-i18n-aria="wlf.ctrl_temp" aria-label="Select temperature profile">
+                  <option value="favorable" data-i18n="wlf.temp_favorable">Favorable 24 °C mean</option>
+                  <option value="cool" data-i18n="wlf.temp_cool">Cool 17 °C mean</option>
+                  <option value="hot" data-i18n="wlf.temp_hot">Heat-stress 31 °C mean</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_wind">Wind direction and speed</legend>
+                <select id="wind-filter" data-testid="select-wind-filter" data-i18n-aria="wlf.ctrl_wind" aria-label="Select wind direction">
+                  <option value="SW" data-i18n="wlf.wind_sw">SW → NE forecast pattern</option>
+                  <option value="W" data-i18n="wlf.wind_w">W → E forecast pattern</option>
+                  <option value="NW" data-i18n="wlf.wind_nw">NW → SE forecast pattern</option>
+                  <option value="S" data-i18n="wlf.wind_s">S → N forecast pattern</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_intervention">Intervention scenario</legend>
+                <select id="intervention-filter" data-testid="select-intervention-filter" data-i18n-aria="wlf.ctrl_intervention" aria-label="Select intervention scenario">
+                  <option value="baseline" data-i18n="wlf.int_baseline">Observed biocontrol schedule</option>
+                  <option value="early-release" data-i18n="wlf.int_early">Early Encarsia release</option>
+                  <option value="delayed-release" data-i18n="wlf.int_delayed">Delayed release / scouting lag</option>
+                </select>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend data-i18n="wlf.ctrl_horizon">Forecast horizon</legend>
+                <div class="range-row">
+                  <input id="week-filter" type="range" min="3" max="14" value="14" data-testid="input-week-filter" data-i18n-aria="wlf.ctrl_horizon" aria-label="Forecast horizon" />
+                  <output id="week-output" for="week-filter">14 days</output>
+                </div>
+                <div class="quick-periods" role="group" data-i18n-aria="wlf.quick_periods" aria-label="Quick period filters">
+                  <button type="button" data-day="3" data-testid="button-period-spring" data-i18n="wlf.period_3">3 days</button>
+                  <button type="button" data-day="7" data-testid="button-period-summer" data-i18n="wlf.period_7">1 week</button>
+                  <button type="button" data-day="14" data-testid="button-period-full" data-i18n="wlf.period_14">2 weeks</button>
+                </div>
+                <button id="playback-toggle" class="playback-button" type="button" data-testid="button-playback" data-i18n="wlf.play">
+                  Play day 3 → 14
+                </button>
+              </fieldset>
+
+              <fieldset class="filter-group toggles">
+                <legend data-i18n="wlf.overlays">Map overlays</legend>
+                <label><input id="toggle-heat" type="checkbox" checked data-testid="input-toggle-heat" /> <span data-i18n="wlf.toggle_kde">Kernel density</span></label>
+                <label><input id="toggle-hotspot" type="checkbox" checked data-testid="input-toggle-hotspot" /> <span data-i18n="wlf.toggle_hotspot">Hotspot grid</span></label>
+                <label><input id="toggle-uncertainty" type="checkbox" checked data-testid="input-toggle-uncertainty" /> <span data-i18n="wlf.toggle_cone">Forecast cone</span></label>
+                <label><input id="toggle-boundary" type="checkbox" checked data-testid="input-toggle-boundary" /> <span data-i18n="wlf.toggle_area">100 km² area</span></label>
+              </fieldset>
+            </div>
+
+            <section class="report-action" aria-labelledby="report-action-title">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.report_eyebrow">Situation report</p>
+                <h3 id="report-action-title" data-i18n="wlf.report_h">One-click PDF export</h3>
+                <p data-i18n="wlf.report_p">Generate a printable 2-page report from the current day, intervention, wind and temperature settings.</p>
+              </div>
+              <button id="generate-report" class="report-button" type="button" data-testid="button-generate-report" data-i18n="wlf.report_btn">
+                Generate situation report
+              </button>
+              <p id="report-status" class="report-status" data-testid="text-report-status" aria-live="polite"></p>
+            </section>
+
+            <section class="scenario-note" aria-labelledby="scenario-note-title">
+              <h3 id="scenario-note-title" data-i18n="wlf.logic_h">Scenario logic</h3>
+              <p id="scenario-note-text">
+                Whitefly pressure begins in the Naaldwijk glasshouse cluster, then diffuses downwind while trap counts rise fastest under warm, humid conditions.
+              </p>
+            </section>
+          </section>
+
+          <!-- WEATHER -->
+          <section class="weather-card" aria-labelledby="weather-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.weather_eyebrow">Fictional forecast</p>
+                <h2 id="weather-title" data-i18n="wlf.weather_title">Weather window alongside pest diffusion</h2>
+              </div>
+              <span id="weather-summary" data-testid="text-weather-summary">Day 10 · favorable whitefly window</span>
+            </div>
+            <div class="weather-layout">
+              <div id="weather-selected" class="weather-selected" data-testid="weather-selected"></div>
+              <div id="weather-forecast" class="weather-forecast" data-testid="weather-forecast"></div>
+            </div>
+          </section>
+
+          <!-- TREND CHART -->
+          <section class="insight-card" aria-labelledby="trend-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.trend_eyebrow">Temporal signal</p>
+                <h2 id="trend-title" data-i18n="wlf.trend_title">Forecast trap count and hotspot area</h2>
+              </div>
+              <span id="active-summary" data-testid="text-active-summary">42 active records</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="timeline-chart" height="180" aria-label="Forecast trap count and hotspot area chart"></canvas>
+            </div>
+          </section>
+
+          <!-- COMPARISON -->
+          <section class="comparison-card" aria-labelledby="comparison-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.compare_eyebrow">Decision story</p>
+                <h2 id="comparison-title" data-i18n="wlf.comparison_title">Intervention strategy comparison</h2>
+              </div>
+              <span id="comparison-summary" data-testid="text-comparison-summary">Early release contains the smallest hotspot area</span>
+            </div>
+            <div id="comparison-grid" class="comparison-grid" data-testid="comparison-grid"></div>
+            <p id="literature-note" class="literature-note" data-i18n="wlf.lit_note">
+              Assumption check: the favorable scenario uses 24 °C and 78% RH because published greenhouse whitefly phenology places maximum population growth near 24 °C, while Encarsia formosa is commonly described as most effective around 21–26 °C and 50–80% RH.
+            </p>
+          </section>
+
+          <!-- TABLE -->
+          <section class="detail-card" aria-labelledby="table-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow" data-i18n="wlf.feed_eyebrow">Incident feed</p>
+                <h2 id="table-title" data-i18n="wlf.table_title">Latest filtered greenhouse reports</h2>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="wlf.th_id">Greenhouse ID</th>
+                    <th data-i18n="wlf.th_stage">Crop stage</th>
+                    <th data-i18n="wlf.th_trap">Trap count</th>
+                    <th data-i18n="wlf.th_bio">Biocontrol</th>
+                    <th data-i18n="wlf.th_risk">Risk</th>
+                    <th data-i18n="wlf.th_weather">KNMI-style weather</th>
+                  </tr>
+                </thead>
+                <tbody id="incident-table" data-testid="table-incidents"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <footer class="prototype-footer">
+            <p data-i18n="wlf.footer">
+              Prototype map uses OpenStreetMap tiles. Regional greenhouse scale and pest category assumptions are informed by
+              <a href="https://www.jpl.nasa.gov/images/pia21986-westland-the-netherlands/" target="_blank" rel="noopener noreferrer">NASA/JPL</a>,
+              <a href="https://www.koppert.com/news-information/news/effective-strategies-to-control-thrips-and-whitefly-in-greenhouses/" target="_blank" rel="noopener noreferrer">Koppert</a>,
+              <a href="https://pestadvisories.usu.edu/2020/03/26/greenhouse-pests/" target="_blank" rel="noopener noreferrer">Utah State University Extension</a>,
+              <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7569604/" target="_blank" rel="noopener noreferrer">greenhouse whitefly phenology research</a>,
+              <a href="https://www.umass.edu/agriculture-food-environment/greenhouse-floriculture/fact-sheets/whiteflies-on-greenhouse-crops" target="_blank" rel="noopener noreferrer">UMass Encarsia guidance</a>,
+              and
+              <a href="https://english.knmidata.nl/open-data/actuele10mindataknmistations" target="_blank" rel="noopener noreferrer">KNMI station documentation</a>.
+              Scenario records are synthetic sample data for demonstration; treat them as an interface prototype, not operational pest advice.
+            </p>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+    <script type="module" src="./westland.js"></script>
+  </body>
+</html>
