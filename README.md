@@ -1,8 +1,7 @@
-# Pest Radar — multi-page site
+# Pest Radar — multi-page demo site
 
 An early-warning system for plant pests, focused on Westland horticulture. A
-static, multi-page site (HTML + CSS + vanilla JS, **no build step**; maps via
-Leaflet 1.9.4). Full EN/NL/ES, dark theme by default.
+static, multi-page site (HTML + CSS + vanilla JS
 
 ## Pages
 - `index.html` — Home (overview + grower journey)
@@ -11,14 +10,6 @@ Leaflet 1.9.4). Full EN/NL/ES, dark theme by default.
 - `westland.html` — Westland regional forecast (prototype)
 - `emerging.html` — Emerging-pests reference (EPPO-style; data-driven registry)
 - `about.html` — Project + design principles
-
-## Documentation (read in this order)
-1. **`START_HERE.md`** — session-start brief: orientation, what's live, deploy
-   reference, technical gotchas, change history.
-2. **`DESIGN_SYSTEM.md`** — the system of record: design rules, color/type tokens,
-   components, the map pattern, i18n contract, page inventory.
-3. **`EDIT_GUIDE.md`** — owner self-service: step-by-step to hide a page, change
-   text/images, add a pest, and publish.
 
 ## Run locally
 ```bash
