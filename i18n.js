@@ -40,7 +40,7 @@ export const STRINGS = {
     // ---- Home / landing ----
     "home.eyebrow": "Early warning for plant health",
     "home.h1": "See plant pests before they reach your crop.",
-    "home.lead": "Pest Radar maps open pest-reporting data so you can see where pests are and where they are heading. [edit: add your own one-line summary here]",
+    "home.lead": "Pest Radar is a regional early warning system for pests in greenhouses",
     "home.cta_global": "Explore the global spread map",
     "home.cta_about": "About the project",
 
@@ -315,7 +315,7 @@ export const STRINGS = {
 
     "home.eyebrow": "Vroege waarschuwing voor plantgezondheid",
     "home.h1": "Zie plantplagen voordat ze uw gewas bereiken.",
-    "home.lead": "Pest Radar brengt open meldingsdata over plagen in kaart, zodat u ziet waar plagen zijn en waar ze naartoe gaan. [edit: voeg hier uw eigen samenvatting toe]",
+    "home.lead": "Pest Radar is een regionaal vroegtijdig waarschuwingssysteem voor plagen in kassen",
     "home.cta_global": "Bekijk de wereldwijde verspreidingskaart",
     "home.cta_about": "Over het project",
 
@@ -587,7 +587,7 @@ export const STRINGS = {
 
     "home.eyebrow": "Alerta temprana para la sanidad vegetal",
     "home.h1": "Vea las plagas antes de que lleguen a su cultivo.",
-    "home.lead": "Pest Radar cartograf\u00eda los datos abiertos de notificaci\u00f3n de plagas para que vea d\u00f3nde est\u00e1n y hacia d\u00f3nde se dirigen. [edit: a\u00f1ada aqu\u00ed su propio resumen]",
+    "home.lead": "Pest Radar es un sistema de alerta temprana regional para plagas en invernaderos",
     "home.cta_global": "Explorar el mapa de propagaci\u00f3n global",
     "home.cta_about": "Sobre el proyecto",
 

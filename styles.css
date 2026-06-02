@@ -1708,6 +1708,13 @@ a.feature-card:hover { border-color: var(--color-primary); transform: translateY
 .wl-sources { margin-top: var(--space-3); }
 .wl-sources a { color: var(--color-primary); }
 [data-theme="dark"] .wl-sources a { color: var(--color-primary-hover); }
+
+/* Journey steps styling */
+.journey { list-style: none; padding: 0; }
+.journey-step { display: flex; gap: var(--space-4); }
+.journey-num { flex-shrink: 0; }
+.journey-step h3 { display: inline; }
+
 @media (max-width: 760px) {
   .wl-hero { padding: var(--space-8) var(--space-4) var(--space-2); }
   .wl-page .kpi-grid { padding: 0 var(--space-4); }
