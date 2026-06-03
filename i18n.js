@@ -40,7 +40,7 @@ export const STRINGS = {
     // ---- Home / landing ----
     "home.eyebrow": "Early warning for plant health",
     "home.h1": "See plant pests before they reach your crop.",
-    "home.lead": "Pest Radar is a regional early warning system for pests in greenhouses",
+    "home.lead": "Pest Radar maps open pest-reporting data so you can see where pests are and where they are heading. [edit: add your own one-line summary here]",
     "home.cta_global": "Explore the global spread map",
     "home.cta_about": "About the project",
 
@@ -191,6 +191,7 @@ export const STRINGS = {
     "map.desc": "Replay verified EPPO first reports year by year. Each country lights up when it is first reported; dots are sized by tomato-export volume as a proxy for likely problem size, and faint trails trace likely introduction paths.",
     "map.recenter": "Recenter map on Europe and the Mediterranean",
     "map.world": "Zoom out to the whole world",
+    "wlf.recenter": "Recenter map on Westland",
     "legend.title": "How to read it",
     "legend.size": "Dot size & colour intensity = tomato-export volume (problem-size proxy)",
     "legend.halo": "Soft fade-out = uncertainty (illustrative, not measured)",
@@ -315,7 +316,7 @@ export const STRINGS = {
 
     "home.eyebrow": "Vroege waarschuwing voor plantgezondheid",
     "home.h1": "Zie plantplagen voordat ze uw gewas bereiken.",
-    "home.lead": "Pest Radar is een regionaal vroegtijdig waarschuwingssysteem voor plagen in kassen",
+    "home.lead": "Pest Radar brengt open meldingsdata over plagen in kaart, zodat u ziet waar plagen zijn en waar ze naartoe gaan. [edit: voeg hier uw eigen samenvatting toe]",
     "home.cta_global": "Bekijk de wereldwijde verspreidingskaart",
     "home.cta_about": "Over het project",
 
@@ -465,6 +466,7 @@ export const STRINGS = {
     "map.desc": "Speel geverifieerde eerste EPPO-meldingen jaar voor jaar af. Elk land licht op bij de eerste melding; stippen worden geschaald op tomatenexportvolume als indicatie van de probleemgrootte, en vage sporen tonen waarschijnlijke introductieroutes.",
     "map.recenter": "Kaart centreren op Europa en het Middellandse Zeegebied",
     "map.world": "Uitzoomen naar de hele wereld",
+    "wlf.recenter": "Kaart centreren op Westland",
     "legend.title": "Hoe lees je dit",
     "legend.size": "Stipgrootte & kleurintensiteit = tomatenexportvolume (probleemgrootte-indicatie)",
     "legend.halo": "Zachte vervaging = onzekerheid (illustratief, niet gemeten)",
@@ -587,7 +589,7 @@ export const STRINGS = {
 
     "home.eyebrow": "Alerta temprana para la sanidad vegetal",
     "home.h1": "Vea las plagas antes de que lleguen a su cultivo.",
-    "home.lead": "Pest Radar es un sistema de alerta temprana regional para plagas en invernaderos",
+    "home.lead": "Pest Radar cartograf\u00eda los datos abiertos de notificaci\u00f3n de plagas para que vea d\u00f3nde est\u00e1n y hacia d\u00f3nde se dirigen. [edit: a\u00f1ada aqu\u00ed su propio resumen]",
     "home.cta_global": "Explorar el mapa de propagaci\u00f3n global",
     "home.cta_about": "Sobre el proyecto",
 
@@ -737,6 +739,7 @@ export const STRINGS = {
     "map.desc": "Reproduzca a\u00f1o a a\u00f1o los primeros informes verificados de la EPPO. Cada pa\u00eds se ilumina en su primer informe; los puntos se dimensionan seg\u00fan el volumen de exportaci\u00f3n de tomate como indicador de la magnitud del problema, y estelas tenues trazan las v\u00edas de introducci\u00f3n probables.",
     "map.recenter": "Centrar el mapa en Europa y el Mediterr\u00e1neo",
     "map.world": "Alejar a todo el mundo",
+    "wlf.recenter": "Centrar el mapa en Westland",
     "legend.title": "C\u00f3mo leerlo",
     "legend.size": "Tama\u00f1o e intensidad de color del punto = volumen de exportaci\u00f3n de tomate (indicador de magnitud)",
     "legend.halo": "Desvanecimiento suave = incertidumbre (ilustrativo, no medido)",

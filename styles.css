@@ -364,6 +364,49 @@ a, button, input, select { transition: color var(--transition-interactive), back
 .map-nav-btn:hover { background: var(--color-surface); border-color: var(--color-primary); color: var(--color-primary); }
 .map-nav-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
+/* ---------------------------------------------------------------------------
+   Fullscreen map mode (shared by global-spread + westland)
+   Promotes the #map element to a full-viewport layer so the map can be viewed
+   — and screen-recorded — edge to edge with no surrounding page chrome.
+   Injected control: a [data-map-fs] toggle button (added to .map-nav / header).
+   JS adds `map-fs-on` to <body> and re-runs Leaflet invalidateSize().
+   --------------------------------------------------------------------------- */
+.map-nav-btn[data-map-fs] svg { width: 18px; height: 18px; }
+body.map-fs-on { overflow: hidden; }
+/* The map fills the viewport. Both pages use id="map". */
+body.map-fs-on #map {
+  /* !important overrides Leaflet's inline position on the container. */
+  position: fixed !important; inset: 0 !important;
+  width: 100vw !important; height: 100vh !important; height: 100dvh !important;
+  margin: 0 !important; z-index: 4000; border-radius: 0;
+}
+/* Keep the year badge readable, anchored to the viewport corner. */
+body.map-fs-on .map-year-badge {
+  position: fixed; right: clamp(16px, 3vw, 40px); bottom: clamp(16px, 3vw, 40px);
+  z-index: 4200; font-size: clamp(2.25rem, 6vw, 4rem);
+}
+/* Floating control cluster (exit + play) shown only in fullscreen. */
+.map-fs-bar {
+  position: fixed; top: clamp(12px, 2vw, 22px); right: clamp(12px, 2vw, 22px);
+  z-index: 4300; display: none; align-items: center; gap: 8px;
+}
+body.map-fs-on .map-fs-bar { display: flex; }
+.map-fs-bar button {
+  width: 40px; height: 40px; display: grid; place-items: center; cursor: pointer;
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+  border: 1px solid var(--color-border); border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+.map-fs-bar button:hover { background: var(--color-surface); border-color: var(--color-primary); color: var(--color-primary); }
+.map-fs-bar button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.map-fs-bar button svg { width: 20px; height: 20px; }
+/* Clean capture mode: hide every overlay so ONLY the map shows. */
+body.map-fs-clean .map-fs-bar,
+body.map-fs-clean .map-year-badge,
+body.map-fs-clean .map-nav { display: none !important; }
+
 /* The diffusion SVG overlay sits in Leaflet's overlayPane; let pointer events
    reach individual dots but pass through the empty regions to the map. */
 .diffusion-overlay { position: absolute; pointer-events: none; overflow: visible; }
@@ -1708,13 +1751,6 @@ a.feature-card:hover { border-color: var(--color-primary); transform: translateY
 .wl-sources { margin-top: var(--space-3); }
 .wl-sources a { color: var(--color-primary); }
 [data-theme="dark"] .wl-sources a { color: var(--color-primary-hover); }
-
-/* Journey steps styling */
-.journey { list-style: none; padding: 0; }
-.journey-step { display: flex; gap: var(--space-4); }
-.journey-num { flex-shrink: 0; }
-.journey-step h3 { display: inline; }
-
 @media (max-width: 760px) {
   .wl-hero { padding: var(--space-8) var(--space-4) var(--space-2); }
   .wl-page .kpi-grid { padding: 0 var(--space-4); }

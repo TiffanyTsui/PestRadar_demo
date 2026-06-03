@@ -338,6 +338,10 @@ function setupMap() {
     subdomains: "abcd", maxZoom: MAX_ZOOM, detectRetina: true, pane: "shadowPane",
   }).addTo(map);
 
+  // Expose for the shared fullscreen module (map-fullscreen.js) so it can call
+  // invalidateSize() after the map is resized to fill the viewport.
+  window.__leafletMap = map;
+
   // Map navigation icon buttons: recenter (home) on Europe/Med, and zoom out to world.
   const resetBtn = document.querySelector("[data-map-reset]");
   if (resetBtn) resetBtn.addEventListener("click", () => map.setView(EURO_VIEW.center, EURO_VIEW.zoom, { animate: true }));

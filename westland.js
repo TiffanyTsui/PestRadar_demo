@@ -173,10 +173,23 @@ const westlandBoundary = [
   [51.984, 4.126],
 ];
 
+const WESTLAND_VIEW = { center: [51.995, 4.215], zoom: 12 };
 const map = L.map('map', {
   zoomControl: true,
   scrollWheelZoom: true,
-}).setView([51.995, 4.215], 12);
+}).setView(WESTLAND_VIEW.center, WESTLAND_VIEW.zoom);
+// Expose for the shared fullscreen module (map-fullscreen.js) so it can call
+// invalidateSize() after the map is resized to fill the viewport.
+window.__leafletMap = map;
+
+// Map navigation icon button: recenter (home) on the Westland default view.
+// Mirrors the global-spread page's nav so both maps snap back the same way.
+const wlResetBtn = document.querySelector('[data-map-reset]');
+if (wlResetBtn) {
+  wlResetBtn.addEventListener('click', () =>
+    map.setView(WESTLAND_VIEW.center, WESTLAND_VIEW.zoom, { animate: true })
+  );
+}
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
